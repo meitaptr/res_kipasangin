@@ -1,21 +1,12 @@
 <!DOCTYPE html>
-<?php
-$dbhost = 'localhost';
-$dbuser = 'root';
-$dbpass = '';
-$koneksi = mysql_connect($dbhost, $dbuser, $dbpass);
-if(! $koneksi ) {
-  die('Gagal Koneksi: ' . mysql_error());
-}
-
-$sql = 'SELECT suhu FROM tabel_fan WHERE date IN (SELECT max(date) FROM tabel_fan)';
- 
-mysql_select_db('res');
-$ambildata = mysql_query( $sql, $koneksi);
-if(! $ambildata ) {
-  die('Gagal ambil data: ' . mysql_error());
-}
-?>
+<?php 
+include 'koneksi_database.php';
+    $data = mysqli_query($koneksi, "SELECT suhu, kontrol FROM tabel_fan WHERE date IN (SELECT max(date) FROM tabel_fan)");
+    foreach ($data as $row){
+        $suhu= $row['suhu'];
+        $kontrol= $row['kontrol'];
+    }
+    ?>
 <html lang="en">
 <head>
     <meta charset="utf-8">
@@ -56,11 +47,7 @@ if(! $ambildata ) {
             <div class="col-md-6 portfolio-item" align="center"
 			style="background:#1B7E5A;margin:0px;margin-top:7%;">
                <!--cetak suhu disini-->
-			   <label style="font-size:500%;color:white"><?php while($row = mysql_fetch_array($ambildata, MYSQL_ASSOC)) {
-					echo " {$row['suhu']}°C <br> ";
-				}
-				mysql_close($koneksi);
-				?></label>
+			   <label style="font-size:500%;color:white"><?php echo $suhu; ?>°C</label>
             </div>
             <div class="col-md-6 portfolio-item">
                 <form action="input-aksi.php" method="post">
@@ -69,7 +56,7 @@ if(! $ambildata ) {
 						<hr>
 					</div>
 					<div style="margin-bottom:2%">
-						<input id="auto" type="radio" name="control" value="0">
+						 <input type="radio"  name="control" value="0" <?=$kontrol == '0' ? ' checked="checked"' : '';?>>
 						<label style="font-size:150%">Otomatis</label><br>
 					</div>
 					<div>
